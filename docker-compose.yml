@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASSWD: "guest"
+      RABBITMQ_ENDPOINT: "rabbitmq:5672/"
+    depends_on:
+      - "mysql"
+      - "rabbitmq"
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 'test_pass'
+      MYSQL_USER: 'test'
+      MYSQL_PASS: 'pass'
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672"
+    expose:
+      - 5672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 3
